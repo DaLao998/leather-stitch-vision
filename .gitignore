@@ -1,0 +1,9 @@
+# 环境
+.venv
+
+# 说明文件夹
+demands
+PPT
+
+# 临时文件夹 
+review_inputs
