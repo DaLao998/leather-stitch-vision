@@ -7,3 +7,10 @@ PPT
 
 # 临时文件夹 
 review_inputs
+
+# 数据文件
+output/*
+!output/*
+
+*.txt
+*.pyc

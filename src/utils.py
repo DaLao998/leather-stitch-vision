@@ -59,10 +59,13 @@ def load_binary_mask(mask_path: Path) -> np.ndarray:
     return binary
 
 
-def iter_image_paths(path: Path) -> list[Path]:
+def iter_image_paths(path: Path, stem_suffix: str | None = None) -> list[Path]:
     if path.is_file():
         return [path]
-    return sorted([item for item in path.iterdir() if item.suffix.lower() in IMAGE_SUFFIXES])
+    image_paths = [item for item in path.iterdir() if item.suffix.lower() in IMAGE_SUFFIXES]
+    if stem_suffix is not None:
+        image_paths = [item for item in image_paths if item.stem.endswith(stem_suffix)]
+    return sorted(image_paths)
 
 
 def iter_mask_paths(path: Path, suffix: str = "*_holes_bw.png") -> list[Path]:
@@ -102,4 +105,6 @@ def derive_roi_path(hole_path: Path, roi_root: Path) -> Path:
     stem = hole_path.stem
     if stem.endswith("_holes_bw"):
         stem = stem[:-9]
-    return roi_root / f"{stem}.jpg"
+    if stem.endswith("_crop"):
+        return roi_root / f"{stem}.jpg"
+    return roi_root / f"{stem}_crop.jpg"
