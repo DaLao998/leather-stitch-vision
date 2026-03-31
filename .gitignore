@@ -1,16 +1,15 @@
 # 环境
-.venv
+.venv/
 
 # 说明文件夹
-demands
-PPT
+demands/
+PPT/
 
-# 临时文件夹 
-review_inputs
+# 临时文件夹
+review_inputs/
 
-# 数据文件
-output/*
-!output/*
-
-*.txt
+# 数据文件 —— 正确写法
+output/**/*
 *.pyc
+__pycache__/
+*.txt
