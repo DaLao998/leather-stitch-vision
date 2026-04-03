@@ -4,10 +4,47 @@ import argparse
 import time
 from pathlib import Path
 
+import cv2
+
 from src.crop_seat_roi import build_roi_crop
-from src.extract_holes import build_hole_artifacts
-from src.find_boundary_hole_centerlines import build_pattern_preview
+from src.extract_holes import RESPONSE_MODES, build_hole_mask_and_centers
 from src.utils import iter_image_paths, load_bgr_image, write_image
+
+
+def build_preview_with_method(
+    boundary_method: int,
+    centers,
+    crop,
+    hole_mask_shape,
+):
+    if boundary_method == 1:
+        from src.find_boundary_hole1 import build_pattern_preview_from_centers
+
+        return build_pattern_preview_from_centers(
+            centers=centers,
+            roi_image=crop,
+            mask_shape=hole_mask_shape,
+            copy_image=False,
+        )
+
+    if boundary_method == 2:
+        from src.find_boundary_hole2 import build_boundary_line_mask_from_centers
+
+        line_mask = build_boundary_line_mask_from_centers(
+            shape=hole_mask_shape,
+            centers=centers,
+        )
+        line_mask = cv2.dilate(
+            line_mask,
+            cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (3, 3)),
+            iterations=1,
+        )
+
+        preview = crop
+        preview[line_mask > 0] = (0, 255, 0)
+        return preview
+
+    raise ValueError(f"Unsupported boundary method: {boundary_method}")
 
 
 def process_path(
@@ -16,35 +53,45 @@ def process_path(
     min_area: int,
     max_area: int,
     max_aspect_ratio: float,
+    response_mode: str,
+    boundary_method: int,
 ) -> tuple[float, float, float]:
     image = load_bgr_image(image_path)
 
-    crop, stage1_elapsed = build_roi_crop(image)
+    t1_start = time.perf_counter()
+    crop = build_roi_crop(image)
+    elapsed1 = time.perf_counter() - t1_start
 
-    stage2_start = time.perf_counter()
-    _, hole_mask, _, _ = build_hole_artifacts(
+    t2_start = time.perf_counter()
+    _, hole_mask, centers = build_hole_mask_and_centers(
         crop,
         min_area=min_area,
         max_area=max_area,
         max_aspect_ratio=max_aspect_ratio,
-        build_inverted=False,
-        build_preview=False,
+        response_mode=response_mode,
     )
-    stage2_elapsed = time.perf_counter() - stage2_start
+    elapsed2 = time.perf_counter() - t2_start
 
-    stage3_start = time.perf_counter()
-    pattern_preview = build_pattern_preview(hole_mask, crop)
-    stage3_elapsed = time.perf_counter() - stage3_start
+    t3_start = time.perf_counter()
+    pattern_preview = build_preview_with_method(
+        boundary_method=boundary_method,
+        centers=centers,
+        crop=crop,
+        hole_mask_shape=hole_mask.shape,
+    )
+    elapsed3 = time.perf_counter() - t3_start
 
     stem = image_path.stem
     write_image(output_dir / f"{stem}_pattern_preview.png", pattern_preview)
-    return stage1_elapsed, stage2_elapsed, stage3_elapsed
+
+    return elapsed1, elapsed2, elapsed3
 
 
 def main() -> None:
-    wall_start = time.perf_counter()
-
-    parser = argparse.ArgumentParser(description="Run ROI crop, hole extraction, and boundary-hole preview generation.")
+    total_start = time.perf_counter()
+    parser = argparse.ArgumentParser(
+        description="Run ROI crop, hole extraction, and boundary preview generation."
+    )
     parser.add_argument("--input", default="picture/1.jpg", help="Image file or directory.")
     parser.add_argument("--output", default="output/pattern", help="Directory for final preview images.")
     parser.add_argument("--min-area", type=int, default=6, help="Minimum connected-component area for hole extraction.")
@@ -55,6 +102,19 @@ def main() -> None:
         default=1.8,
         help="Reject hole candidates more elongated than this ratio.",
     )
+    parser.add_argument(
+        "--response-mode",
+        choices=RESPONSE_MODES,
+        default="multi",
+        help="Hole response mode: multi is more robust, gray is faster.",
+    )
+    parser.add_argument(
+        "--boundary-method",
+        type=int,
+        choices=(1, 2),
+        default=2,
+        help="Boundary method: 1 outputs boundary points preview, 2 outputs boundary line preview.",
+    )
     args = parser.parse_args()
 
     image_paths = iter_image_paths(Path(args.input))
@@ -62,31 +122,30 @@ def main() -> None:
         raise RuntimeError(f"No images found under: {args.input}")
 
     output_dir = Path(args.output)
-    stage1_total = 0.0
-    stage2_total = 0.0
-    stage3_total = 0.0
+    total1 = 0.0
+    total2 = 0.0
+    total3 = 0.0
 
     for image_path in image_paths:
-        stage1_elapsed, stage2_elapsed, stage3_elapsed = process_path(
+        elapsed1, elapsed2, elapsed3 = process_path(
             image_path=image_path,
             output_dir=output_dir,
             min_area=args.min_area,
             max_area=args.max_area,
             max_aspect_ratio=args.max_aspect_ratio,
+            response_mode=args.response_mode,
+            boundary_method=args.boundary_method,
         )
-        stage1_total += stage1_elapsed
-        stage2_total += stage2_elapsed
-        stage3_total += stage3_elapsed
+        total1 += elapsed1
+        total2 += elapsed2
+        total3 += elapsed3
 
-    total_compute = stage1_total + stage2_total + stage3_total
-    wall_elapsed = time.perf_counter() - wall_start
+    total = total1 + total2 + total3
+    total_time = time.perf_counter() - total_start
     print(
-        f"roi_compute: {stage1_total:.3f}s, "
-        f"holes_compute: {stage2_total:.3f}s, "
-        f"pattern_compute: {stage3_total:.3f}s, "
-        f"total_compute: {total_compute:.3f}s, "
-        f"wall: {wall_elapsed:.3f}s"
+        f"耗时1: {total1:.3f}s + 耗时2: {total2:.3f}s + 耗时3: {total3:.3f}s = 纯算法总耗时: {total:.3f}s"
     )
+    print(f"程序墙钟总耗时：{total_time:.3f} s")
 
 
 if __name__ == "__main__":

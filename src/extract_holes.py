@@ -48,7 +48,7 @@ def build_preview_image(image: np.ndarray, hole_mask: np.ndarray) -> np.ndarray:
     return preview
 
 
-def build_hole_artifacts(
+def build_hole_mask_and_centers(
     image: np.ndarray,
     min_area: int = 6,
     max_area: int = 120,
@@ -56,15 +56,12 @@ def build_hole_artifacts(
     response: np.ndarray | None = None,
     response_mode: str = "multi",
     discard_border_components: bool = False,
-    build_inverted: bool = True,
-    build_preview: bool = True,
-) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     if response is None:
         response = build_response(image, response_mode=response_mode)
 
     _, binary = cv2.threshold(response, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-
-    num_labels, labels, stats, _ = cv2.connectedComponentsWithStats(binary, connectivity=8)
+    num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(binary, connectivity=8)
 
     areas = stats[:, cv2.CC_STAT_AREA].astype(np.int32)
     widths = stats[:, cv2.CC_STAT_WIDTH].astype(np.int32)
@@ -72,7 +69,6 @@ def build_hole_artifacts(
 
     short_side = np.maximum(1, np.minimum(widths, heights)).astype(np.float32)
     long_side = np.maximum(widths, heights).astype(np.float32)
-
     aspect_ratio = long_side / short_side
     fill_ratio = areas.astype(np.float32) / np.maximum(1, widths * heights).astype(np.float32)
 
@@ -82,7 +78,6 @@ def build_hole_artifacts(
         & (aspect_ratio <= float(max_aspect_ratio))
         & (fill_ratio >= float(MIN_FILL_RATIO))
     )
-
     keep[0] = False
 
     if discard_border_components and num_labels > 1:
@@ -95,10 +90,54 @@ def build_hole_artifacts(
         keep[0] = False
 
     hole_mask = (keep[labels].astype(np.uint8) * 255)
+    centers = centroids[keep].astype(np.float32)
+    return response, hole_mask, centers
+
+
+def build_hole_mask(
+    image: np.ndarray,
+    min_area: int = 6,
+    max_area: int = 120,
+    max_aspect_ratio: float = 1.8,
+    response: np.ndarray | None = None,
+    response_mode: str = "multi",
+    discard_border_components: bool = False,
+) -> tuple[np.ndarray, np.ndarray]:
+    response, hole_mask, _ = build_hole_mask_and_centers(
+        image=image,
+        min_area=min_area,
+        max_area=max_area,
+        max_aspect_ratio=max_aspect_ratio,
+        response=response,
+        response_mode=response_mode,
+        discard_border_components=discard_border_components,
+    )
+    return response, hole_mask
+
+
+def build_hole_artifacts(
+    image: np.ndarray,
+    min_area: int = 6,
+    max_area: int = 120,
+    max_aspect_ratio: float = 1.8,
+    response: np.ndarray | None = None,
+    response_mode: str = "multi",
+    discard_border_components: bool = False,
+    build_inverted: bool = True,
+    build_preview: bool = True,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    response, hole_mask = build_hole_mask(
+        image=image,
+        min_area=min_area,
+        max_area=max_area,
+        max_aspect_ratio=max_aspect_ratio,
+        response=response,
+        response_mode=response_mode,
+        discard_border_components=discard_border_components,
+    )
 
     inverted = cv2.bitwise_not(hole_mask) if build_inverted else np.empty((0, 0), dtype=np.uint8)
     preview = build_preview_image(image, hole_mask) if build_preview else np.empty((0, 0, 3), dtype=np.uint8)
-
     return response, hole_mask, inverted, preview
 
 
@@ -113,10 +152,9 @@ def process_path(
     save_response: bool = False,
     save_inverted: bool = False,
     save_preview: bool = False,
-) -> float:
+) -> None:
     image = load_bgr_image(image_path)
 
-    compute_start = time.perf_counter()
     response, hole_mask, inverted, preview = build_hole_artifacts(
         image,
         min_area=min_area,
@@ -127,21 +165,16 @@ def process_path(
         build_inverted=save_inverted,
         build_preview=save_preview,
     )
-    compute_elapsed = time.perf_counter() - compute_start
 
     stem = image_path.stem
     write_image(output_dir / f"{stem}_holes_bw.png", hole_mask)
 
     if save_response:
         write_image(output_dir / f"{stem}_blackhat.png", response)
-
     if save_inverted:
         write_image(output_dir / f"{stem}_holes_bw_inverted.png", inverted)
-
     if save_preview:
         write_image(output_dir / f"{stem}_holes_preview.png", preview)
-
-    return compute_elapsed
 
 
 def main() -> None:
@@ -200,10 +233,8 @@ def main() -> None:
     save_preview = args.save_debug or args.save_preview
 
     output_dir = Path(args.output)
-    compute_total = 0.0
-
     for image_path in image_paths:
-        compute_total += process_path(
+        process_path(
             image_path=image_path,
             output_dir=output_dir,
             min_area=args.min_area,
@@ -217,7 +248,7 @@ def main() -> None:
         )
 
     wall_elapsed = time.perf_counter() - wall_start
-    print(f"holes_compute: {compute_total:.3f}s, wall: {wall_elapsed:.3f}s")
+    print(f"wall: {wall_elapsed:.3f}s")
 
 
 if __name__ == "__main__":

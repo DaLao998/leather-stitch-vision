@@ -125,32 +125,81 @@ def build_boundary_centers_mask(
     return mask
 
 
-def build_pattern_preview(
-    hole_mask: np.ndarray,
-    roi_image: np.ndarray,
-) -> np.ndarray:
-    centers = extract_hole_centers(hole_mask)
+def extract_boundary_points_from_centers(centers: np.ndarray) -> np.ndarray:
+    if len(centers) < 16:
+        raise RuntimeError("Too few valid hole centers.")
+
     spacing = estimate_spacing(centers)
     boundary_paths = extract_mesh_boundaries(centers, spacing)
-    boundary_mask = build_boundary_centers_mask(hole_mask.shape, boundary_paths)
 
-    preview = roi_image.copy()
-    points_thick = cv2.dilate(boundary_mask, cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)), iterations=1)
+    if not boundary_paths:
+        return np.empty((0, 2), dtype=np.float32)
+
+    boundary_points = np.concatenate(boundary_paths, axis=0).astype(np.float32)
+
+    if len(boundary_points) == 0:
+        return np.empty((0, 2), dtype=np.float32)
+
+    boundary_points = np.round(boundary_points, 3)
+    _, unique_idx = np.unique(boundary_points, axis=0, return_index=True)
+    unique_idx = np.sort(unique_idx)
+
+    return boundary_points[unique_idx].astype(np.float32)
+
+
+def extract_boundary_points(hole_mask: np.ndarray) -> np.ndarray:
+    centers = extract_hole_centers(hole_mask)
+    return extract_boundary_points_from_centers(centers)
+
+
+def build_boundary_mask_from_centers(shape: tuple[int, int], centers: np.ndarray) -> np.ndarray:
+    boundary_points = extract_boundary_points_from_centers(centers)
+
+    mask = np.zeros(shape, dtype=np.uint8)
+    for point in boundary_points:
+        cv2.circle(mask, (int(round(point[0])), int(round(point[1]))), 1, 255, -1)
+    return mask
+
+
+def build_boundary_mask(hole_mask: np.ndarray) -> np.ndarray:
+    centers = extract_hole_centers(hole_mask)
+    return build_boundary_mask_from_centers(hole_mask.shape, centers)
+
+
+def build_pattern_preview_from_centers(
+    centers: np.ndarray,
+    roi_image: np.ndarray,
+    mask_shape: tuple[int, int],
+    copy_image: bool = True,
+) -> np.ndarray:
+    boundary_mask = build_boundary_mask_from_centers(mask_shape, centers)
+    points_thick = cv2.dilate(
+        boundary_mask,
+        cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5)),
+        iterations=1,
+    )
+
+    preview = roi_image.copy() if copy_image else roi_image
     preview[points_thick > 0] = (0, 255, 0)
     return preview
 
 
-def process_path(hole_path: Path, roi_path: Path, output_dir: Path) -> float:
+def build_pattern_preview(
+    hole_mask: np.ndarray,
+    roi_image: np.ndarray,
+    copy_image: bool = True,
+) -> np.ndarray:
+    centers = extract_hole_centers(hole_mask)
+    return build_pattern_preview_from_centers(centers, roi_image, hole_mask.shape, copy_image=copy_image)
+
+
+def process_path(hole_path: Path, roi_path: Path, output_dir: Path) -> None:
     hole_mask = load_binary_mask(hole_path)
     roi_image = load_bgr_image(roi_path)
-
-    compute_start = time.perf_counter()
-    preview = build_pattern_preview(hole_mask, roi_image)
-    compute_elapsed = time.perf_counter() - compute_start
+    preview = build_pattern_preview(hole_mask, roi_image, copy_image=True)
 
     stem = hole_path.stem.replace("_holes_bw", "")
     write_image(output_dir / f"{stem}_pattern_preview.png", preview)
-    return compute_elapsed
 
 
 def main() -> None:
@@ -168,14 +217,12 @@ def main() -> None:
 
     roi_input = Path(args.roi)
     output_dir = Path(args.output)
-    compute_total = 0.0
-
     for hole_path in hole_paths:
         roi_path = roi_input if roi_input.is_file() else derive_roi_path(hole_path, roi_input)
-        compute_total += process_path(hole_path, roi_path, output_dir)
+        process_path(hole_path, roi_path, output_dir)
 
     wall_elapsed = time.perf_counter() - wall_start
-    print(f"pattern_compute: {compute_total:.3f}s, wall: {wall_elapsed:.3f}s")
+    print(f"wall: {wall_elapsed:.3f}s")
 
 
 if __name__ == "__main__":
