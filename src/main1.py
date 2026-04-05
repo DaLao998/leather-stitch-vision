@@ -10,26 +10,26 @@ from src.extract_holes import build_hole_mask_and_centers
 from src.find_boundary_hole import build_boundary_line_mask_from_centers
 from src.utils import iter_image_paths, load_bgr_image, write_image
 
-#  黄色坐垫（图片大）
+# 灰色坐垫（图片小）
 # ==============================================================================
-# 全局超参数配置区 (Global Hyperparameters)
+# 全局超参数配置区 (Global Hyperparameters)             
 # 您可以在这里直接修改默认参数，或通过命令行覆盖
 # ==============================================================================
 
 # --- [0. 全局预处理参数] ---
-IMAGE_SCALE = 1               # 图像初始缩放比例 (例如 0.5 为缩小一半，可加速处理)
+IMAGE_SCALE = 1.0               # 图像初始缩放比例 (例如 0.5 为缩小一半，可加速处理)
 
-# --- [1. crop_seat_roi.py: 区域裁剪参数] --- 
-BASE_IMAGE_WIDTH = 5472         # 基准图像宽度 (用于将ROI坐标等比映射到实际图片)
-BASE_IMAGE_HEIGHT = 3648        # 基准图像高度
-ROI_POINTS = [1689, 201, 3214, 228, 3180, 2445, 1584, 2382] # ROI多边形顶点坐标 [x1,y1, x2,y2, x3,y3, x4,y4]
+# --- [1. crop_seat_roi.py: 区域裁剪参数] ---  
+BASE_IMAGE_WIDTH = 898         # 基准图像宽度 (用于将ROI坐标等比映射到实际图片)
+BASE_IMAGE_HEIGHT = 969        # 基准图像高度
+ROI_POINTS = [0, 0, 0, 969, 898, 969, 898, 0] # ROI多边形顶点坐标 [x1,y1, x2,y2, x3,y3, x4,y4]
 
 # --- [2. extract_holes.py: 打孔提取参数] ---
 # 自适应阈值提取
 ADAPTIVE_BLOCK_SIZE = 31        # 局部观察窗口大小(必须是奇数)。截取孔洞越大该值需要越大
 ADAPTIVE_C = 7                  # 灵敏度。数字越小，提取出的周围散乱噪点（缝纫线等）越丰富
 # 形态学操作
-CLEAN_KERNEL_SIZE = 6           # 过滤孤立小噪点的椭圆核大小
+CLEAN_KERNEL_SIZE = 3           # 过滤孤立小噪点的椭圆核大小
 MERGE_KERNEL_SIZE = 5           # 强制粘连杂乱密集噪点的椭圆核大小
 # 连通域过滤 (剥离非孔洞杂质)
 HOLE_MIN_AREA = 6               # 最小合法孔洞面积
@@ -118,7 +118,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run ROI crop, hole extraction, and boundary preview generation.")
     
     # 基础路径参数
-    parser.add_argument("--input", default="picture/3.jpg", help="Image file or directory.")
+    parser.add_argument("--input", default="picture/4.png", help="Image file or directory.")
     parser.add_argument("--output", default="output/pattern", help="Directory for final preview images.")
     parser.add_argument("--image-scale", type=float, default=IMAGE_SCALE, help="Global image scale.")
 

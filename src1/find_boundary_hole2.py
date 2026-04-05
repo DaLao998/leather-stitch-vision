@@ -7,7 +7,7 @@ from pathlib import Path
 import cv2
 import numpy as np
 
-from src.utils import derive_roi_path, iter_mask_paths, load_binary_mask, load_bgr_image, write_image
+from src1.utils import derive_roi_path, iter_mask_paths, load_binary_mask, load_bgr_image, write_image
 
 try:
     from scipy.spatial import cKDTree
@@ -16,9 +16,12 @@ except ImportError as exc:
 
 
 def extract_hole_centers(mask: np.ndarray) -> np.ndarray:
-    num_labels, _, stats, centroids = cv2.connectedComponentsWithStats((mask > 0).astype(np.uint8), 8)
+    mask_u8 = mask if mask.dtype == np.uint8 else mask.astype(np.uint8)
+    num_labels, _, stats, centroids = cv2.connectedComponentsWithStats((mask_u8 > 0).astype(np.uint8), 8)
 
+    h_img, w_img = mask.shape[:2]
     points: list[np.ndarray] = []
+
     for idx in range(1, num_labels):
         x = int(stats[idx, cv2.CC_STAT_LEFT])
         y = int(stats[idx, cv2.CC_STAT_TOP])
@@ -26,7 +29,7 @@ def extract_hole_centers(mask: np.ndarray) -> np.ndarray:
         h = int(stats[idx, cv2.CC_STAT_HEIGHT])
         area = int(stats[idx, cv2.CC_STAT_AREA])
 
-        if x <= 0 or y <= 0 or (x + w) >= mask.shape[1] or (y + h) >= mask.shape[0]:
+        if x <= 0 or y <= 0 or (x + w) >= w_img or (y + h) >= h_img:
             continue
 
         aspect = max(w / max(h, 1), h / max(w, 1))
@@ -40,11 +43,14 @@ def extract_hole_centers(mask: np.ndarray) -> np.ndarray:
     return np.asarray(points, dtype=np.float32)
 
 
-def estimate_spacing(points: np.ndarray) -> float:
+def estimate_spacing(points: np.ndarray, tree: cKDTree | None = None) -> float:
     if len(points) < 2:
         raise RuntimeError("Not enough points to estimate spacing.")
 
-    dists, _ = cKDTree(points).query(points, k=2)
+    if tree is None:
+        tree = cKDTree(points)
+
+    dists, _ = tree.query(points, k=2)
     nearest = dists[:, 1]
     nearest = nearest[np.isfinite(nearest)]
     if len(nearest) == 0:
@@ -73,15 +79,23 @@ def _count_occupied_sectors(vectors: np.ndarray, num_sectors: int = 8) -> int:
     return int(len(np.unique(sector_ids)))
 
 
-def extract_boundary_points_from_centers(centers: np.ndarray) -> np.ndarray:
+def extract_boundary_points_from_centers(
+    centers: np.ndarray,
+    spacing: float | None = None,
+    tree: cKDTree | None = None,
+) -> np.ndarray:
     if len(centers) < 16:
         raise RuntimeError("Too few valid hole centers.")
 
-    spacing = estimate_spacing(centers)
-    tree = cKDTree(centers)
+    if tree is None:
+        tree = cKDTree(centers)
+    if spacing is None:
+        spacing = estimate_spacing(centers, tree=tree)
 
     min_r = spacing * 0.55
     max_r = spacing * 1.45
+    min_r2 = min_r * min_r
+    max_r2 = max_r * max_r
 
     boundary_idx: list[int] = []
 
@@ -89,13 +103,18 @@ def extract_boundary_points_from_centers(centers: np.ndarray) -> np.ndarray:
         neighbor_ids = tree.query_ball_point(point, r=max_r)
 
         local_vectors: list[np.ndarray] = []
+        px, py = float(point[0]), float(point[1])
+
         for nb in neighbor_ids:
             if nb == idx:
                 continue
-            vec = centers[nb] - point
-            dist = float(np.linalg.norm(vec))
-            if min_r <= dist <= max_r:
-                local_vectors.append(vec)
+
+            dx = float(centers[nb, 0]) - px
+            dy = float(centers[nb, 1]) - py
+            dist2 = dx * dx + dy * dy
+
+            if min_r2 <= dist2 <= max_r2:
+                local_vectors.append(np.array([dx, dy], dtype=np.float32))
 
         if not local_vectors:
             boundary_idx.append(idx)
@@ -118,13 +137,14 @@ def extract_boundary_points_from_centers(centers: np.ndarray) -> np.ndarray:
     if not boundary_idx:
         return np.empty((0, 2), dtype=np.float32)
 
-    boundary_points = centers[np.asarray(boundary_idx, dtype=np.int32)].astype(np.float32)
-    return boundary_points
+    return centers[np.asarray(boundary_idx, dtype=np.int32)].astype(np.float32)
 
 
 def extract_boundary_points(hole_mask: np.ndarray) -> np.ndarray:
     centers = extract_hole_centers(hole_mask)
-    return extract_boundary_points_from_centers(centers)
+    tree = cKDTree(centers)
+    spacing = estimate_spacing(centers, tree=tree)
+    return extract_boundary_points_from_centers(centers, spacing=spacing, tree=tree)
 
 
 def build_boundary_mask_from_points(
@@ -132,55 +152,84 @@ def build_boundary_mask_from_points(
     boundary_points: np.ndarray,
 ) -> np.ndarray:
     mask = np.zeros(shape, dtype=np.uint8)
-    for point in boundary_points:
-        cv2.circle(mask, (int(round(point[0])), int(round(point[1]))), 1, 255, -1)
+    pts = np.round(boundary_points).astype(np.int32)
+    for x, y in pts:
+        cv2.circle(mask, (x, y), 1, 255, -1)
     return mask
 
 
-def build_boundary_mask_from_centers(shape: tuple[int, int], centers: np.ndarray) -> np.ndarray:
-    boundary_points = extract_boundary_points_from_centers(centers)
+def build_boundary_mask_from_centers(
+    shape: tuple[int, int],
+    centers: np.ndarray,
+    boundary_points: np.ndarray | None = None,
+    spacing: float | None = None,
+    tree: cKDTree | None = None,
+) -> np.ndarray:
+    if boundary_points is None:
+        boundary_points = extract_boundary_points_from_centers(centers, spacing=spacing, tree=tree)
     return build_boundary_mask_from_points(shape, boundary_points)
 
 
 def build_boundary_mask(hole_mask: np.ndarray) -> np.ndarray:
     centers = extract_hole_centers(hole_mask)
-    return build_boundary_mask_from_centers(hole_mask.shape, centers)
+    tree = cKDTree(centers)
+    spacing = estimate_spacing(centers, tree=tree)
+    boundary_points = extract_boundary_points_from_centers(centers, spacing=spacing, tree=tree)
+    return build_boundary_mask_from_points(hole_mask.shape, boundary_points)
 
 
 def build_boundary_line_mask_from_centers(
     shape: tuple[int, int],
     centers: np.ndarray,
+    boundary_points: np.ndarray | None = None,
+    spacing: float | None = None,
 ) -> np.ndarray:
-    boundary_points = extract_boundary_points_from_centers(centers)
+    if spacing is None:
+        center_tree = cKDTree(centers)
+        spacing = estimate_spacing(centers, tree=center_tree)
+
+    if boundary_points is None:
+        center_tree = cKDTree(centers)
+        boundary_points = extract_boundary_points_from_centers(centers, spacing=spacing, tree=center_tree)
+
     if len(boundary_points) == 0:
         return np.zeros(shape, dtype=np.uint8)
 
-    spacing = estimate_spacing(centers)
-    tree = cKDTree(boundary_points)
+    boundary_tree = cKDTree(boundary_points)
 
     line_mask = np.zeros(shape, dtype=np.uint8)
     min_r = spacing * 0.70
     max_r = spacing * 1.55
+    min_r2 = min_r * min_r
+    max_r2 = max_r * max_r
+
+    points_i32 = np.round(boundary_points).astype(np.int32)
 
     for i, point in enumerate(boundary_points):
-        neighbor_ids = tree.query_ball_point(point, r=max_r)
+        neighbor_ids = boundary_tree.query_ball_point(point, r=max_r)
         candidates: list[tuple[float, int]] = []
+
+        px, py = float(point[0]), float(point[1])
 
         for nb in neighbor_ids:
             if nb == i:
                 continue
-            vec = boundary_points[nb] - point
-            dist = float(np.linalg.norm(vec))
-            if min_r <= dist <= max_r:
-                candidates.append((dist, nb))
+
+            dx = float(boundary_points[nb, 0]) - px
+            dy = float(boundary_points[nb, 1]) - py
+            dist2 = dx * dx + dy * dy
+
+            if min_r2 <= dist2 <= max_r2:
+                candidates.append((dist2, nb))
 
         if not candidates:
             continue
 
         candidates.sort(key=lambda x: x[0])
+        p1 = tuple(points_i32[i])
+
         for _, nb in candidates[:3]:
-            p1 = tuple(np.round(point).astype(np.int32))
-            p2 = tuple(np.round(boundary_points[nb]).astype(np.int32))
+            p2 = tuple(points_i32[nb])
             cv2.line(line_mask, p1, p2, 255, 1, lineType=cv2.LINE_AA)
 
     return line_mask
@@ -188,7 +237,15 @@ def build_boundary_line_mask_from_centers(
 
 def build_boundary_line_mask(hole_mask: np.ndarray) -> np.ndarray:
     centers = extract_hole_centers(hole_mask)
-    return build_boundary_line_mask_from_centers(hole_mask.shape, centers)
+    center_tree = cKDTree(centers)
+    spacing = estimate_spacing(centers, tree=center_tree)
+    boundary_points = extract_boundary_points_from_centers(centers, spacing=spacing, tree=center_tree)
+    return build_boundary_line_mask_from_centers(
+        hole_mask.shape,
+        centers,
+        boundary_points=boundary_points,
+        spacing=spacing,
+    )
 
 
 def build_pattern_preview_from_centers(
@@ -196,8 +253,14 @@ def build_pattern_preview_from_centers(
     roi_image: np.ndarray,
     mask_shape: tuple[int, int],
     copy_image: bool = True,
+    boundary_points: np.ndarray | None = None,
+    spacing: float | None = None,
+    tree: cKDTree | None = None,
 ) -> np.ndarray:
-    boundary_mask = build_boundary_mask_from_centers(mask_shape, centers)
+    if boundary_points is None:
+        boundary_points = extract_boundary_points_from_centers(centers, spacing=spacing, tree=tree)
+
+    boundary_mask = build_boundary_mask_from_points(mask_shape, boundary_points)
 
     points_thick = cv2.dilate(
         boundary_mask,
@@ -216,13 +279,38 @@ def build_pattern_preview(
     copy_image: bool = True,
 ) -> np.ndarray:
     centers = extract_hole_centers(hole_mask)
-    return build_pattern_preview_from_centers(centers, roi_image, hole_mask.shape, copy_image=copy_image)
+    tree = cKDTree(centers)
+    spacing = estimate_spacing(centers, tree=tree)
+    boundary_points = extract_boundary_points_from_centers(centers, spacing=spacing, tree=tree)
+    return build_pattern_preview_from_centers(
+        centers,
+        roi_image,
+        hole_mask.shape,
+        copy_image=copy_image,
+        boundary_points=boundary_points,
+        spacing=spacing,
+        tree=tree,
+    )
 
 
 def process_path(hole_path: Path, roi_path: Path, output_dir: Path) -> None:
     hole_mask = load_binary_mask(hole_path)
     roi_image = load_bgr_image(roi_path)
-    preview = build_pattern_preview(hole_mask, roi_image, copy_image=True)
+
+    centers = extract_hole_centers(hole_mask)
+    tree = cKDTree(centers)
+    spacing = estimate_spacing(centers, tree=tree)
+    boundary_points = extract_boundary_points_from_centers(centers, spacing=spacing, tree=tree)
+
+    preview = build_pattern_preview_from_centers(
+        centers,
+        roi_image,
+        hole_mask.shape,
+        copy_image=True,
+        boundary_points=boundary_points,
+        spacing=spacing,
+        tree=tree,
+    )
 
     stem = hole_path.stem.replace("_holes_bw", "")
     write_image(output_dir / f"{stem}_pattern_preview.png", preview)
