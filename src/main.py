@@ -48,7 +48,7 @@ SMOOTH_EPS_RATIO = 0.10           # 平滑基线系数（spacing 的倍数）
 SMOOTH_EPS_MIN = 1.0              # 平滑最小 epsilon（像素）
 HULL_POLY_EPS_RATIO = 0.0035      # 轮廓简化 epsilon（perimeter 的倍数）
 # 输出图模式
-LINE = "band"
+LINE = "line"
 BAND_WIDTH_PX = 0
 BAND_WIDTH_RATIO = 0.18
 BAND_KERNEL = "ellipse"
@@ -187,7 +187,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run ROI crop, hole extraction, and boundary preview generation.")
 
     # 基础路径参数
-    parser.add_argument("--input", default="picture/1.jpg", help="Image file or directory.")
+    parser.add_argument("--input", default="picture/2.jpg", help="Image file or directory.")
     parser.add_argument("--output", default="output/pattern", help="Directory for final preview images.")
     parser.add_argument("--image-scale", type=_positive_float, default=IMAGE_SCALE, help="Global image scale.")
     parser.add_argument(
