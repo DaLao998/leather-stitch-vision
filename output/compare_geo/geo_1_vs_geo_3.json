@@ -1,0 +1,572 @@
+{
+  "reference_file": "output\\centerline\\geo_1.json",
+  "target_file": "output\\centerline\\geo_3.json",
+  "reference_node_count": 18,
+  "target_node_count": 18,
+  "reference_segment_count": 18,
+  "target_segment_count": 18,
+  "matched_node_count": 18,
+  "matched_segment_count": 18,
+  "node_mapping": {
+    "C0": "C0",
+    "C1": "C1",
+    "C2": "C3",
+    "C3": "C2",
+    "C4": "C4",
+    "C5": "C5",
+    "B6": "B12",
+    "B7": "B13",
+    "B8": "B14",
+    "B9": "B15",
+    "B10": "B16",
+    "B11": "B17",
+    "B12": "B6",
+    "B13": "B7",
+    "B14": "B8",
+    "B15": "B9",
+    "B16": "B10",
+    "B17": "B11"
+  },
+  "segment_matches": [
+    {
+      "ref_segment": "S0",
+      "target_segment": "S9",
+      "ref_from_node": "B7",
+      "ref_to_node": "C0",
+      "target_from_node": "B13",
+      "target_to_node": "C0",
+      "rotation_deg": 0.198477,
+      "translation_midpoint_xy": [
+        -4.0,
+        -0.5
+      ],
+      "rigid_translation_xy": [
+        -3.524449,
+        -5.061363
+      ],
+      "length_ref": 139.671042,
+      "length_target": 140.545366,
+      "length_ratio": 1.00626,
+      "midpoint_ref": [
+        1317.0,
+        135.0
+      ],
+      "midpoint_target": [
+        1313.0,
+        134.5
+      ],
+      "angle_ref_deg": 60.865708,
+      "angle_target_deg": 61.064184
+    },
+    {
+      "ref_segment": "S1",
+      "target_segment": "S10",
+      "ref_from_node": "C0",
+      "ref_to_node": "B6",
+      "target_from_node": "C0",
+      "target_to_node": "B12",
+      "rotation_deg": 0.033605,
+      "translation_midpoint_xy": [
+        0.0,
+        7.5
+      ],
+      "rigid_translation_xy": [
+        0.235153,
+        6.64111
+      ],
+      "length_ref": 467.771312,
+      "length_target": 484.769017,
+      "length_ratio": 1.036338,
+      "midpoint_ref": [
+        1464.5,
+        400.5
+      ],
+      "midpoint_target": [
+        1464.5,
+        408.0
+      ],
+      "angle_ref_deg": 60.96919,
+      "angle_target_deg": 61.002795
+    },
+    {
+      "ref_segment": "S10",
+      "target_segment": "S1",
+      "ref_from_node": "C0",
+      "ref_to_node": "C1",
+      "target_from_node": "C0",
+      "target_to_node": "C1",
+      "rotation_deg": -0.035428,
+      "translation_midpoint_xy": [
+        -3.5,
+        -0.5
+      ],
+      "rigid_translation_xy": [
+        -3.752356,
+        0.252278
+      ],
+      "length_ref": 502.977137,
+      "length_target": 501.597448,
+      "length_ratio": 0.997257,
+      "midpoint_ref": [
+        1216.5,
+        408.5
+      ],
+      "midpoint_target": [
+        1213.0,
+        408.0
+      ],
+      "angle_ref_deg": 122.331404,
+      "angle_target_deg": 122.295976
+    },
+    {
+      "ref_segment": "S11",
+      "target_segment": "S2",
+      "ref_from_node": "C1",
+      "ref_to_node": "C3",
+      "target_from_node": "C1",
+      "target_to_node": "C2",
+      "rotation_deg": 0.107928,
+      "translation_midpoint_xy": [
+        -3.0,
+        -2.0
+      ],
+      "rigid_translation_xy": [
+        -1.376478,
+        -3.752202
+      ],
+      "length_ref": 567.101402,
+      "length_target": 565.409586,
+      "length_ratio": 0.997017,
+      "midpoint_ref": [
+        931.0,
+        861.0
+      ],
+      "midpoint_target": [
+        928.0,
+        859.0
+      ],
+      "angle_ref_deg": 122.176735,
+      "angle_target_deg": 122.284663
+    },
+    {
+      "ref_segment": "S12",
+      "target_segment": "S3",
+      "ref_from_node": "C3",
+      "ref_to_node": "B13",
+      "target_from_node": "C2",
+      "target_to_node": "B7",
+      "rotation_deg": -0.033413,
+      "translation_midpoint_xy": [
+        -3.5,
+        -1.5
+      ],
+      "rigid_translation_xy": [
+        -4.461873,
+        -1.247205
+      ],
+      "length_ref": 1298.092832,
+      "length_target": 1301.162941,
+      "length_ratio": 1.002365,
+      "midpoint_ref": [
+        433.0,
+        1649.5
+      ],
+      "midpoint_target": [
+        429.5,
+        1648.0
+      ],
+      "angle_ref_deg": 122.318855,
+      "angle_target_deg": 122.285442
+    },
+    {
+      "ref_segment": "S13",
+      "target_segment": "S4",
+      "ref_from_node": "B15",
+      "ref_to_node": "C2",
+      "target_from_node": "B9",
+      "target_to_node": "C3",
+      "rotation_deg": -0.242663,
+      "translation_midpoint_xy": [
+        -4.5,
+        -3.0
+      ],
+      "rigid_translation_xy": [
+        -4.951987,
+        0.560706
+      ],
+      "length_ref": 82.377181,
+      "length_target": 77.38863,
+      "length_ratio": 0.939443,
+      "midpoint_ref": [
+        840.5,
+        108.5
+      ],
+      "midpoint_target": [
+        836.0,
+        105.5
+      ],
+      "angle_ref_deg": 123.111342,
+      "angle_target_deg": 122.868679
+    },
+    {
+      "ref_segment": "S14",
+      "target_segment": "S5",
+      "ref_from_node": "C2",
+      "ref_to_node": "C4",
+      "target_from_node": "C3",
+      "target_to_node": "C4",
+      "rotation_deg": -0.056029,
+      "translation_midpoint_xy": [
+        -3.0,
+        -4.5
+      ],
+      "rigid_translation_xy": [
+        -3.36737,
+        -3.847563
+      ],
+      "length_ref": 555.30172,
+      "length_target": 556.141169,
+      "length_ratio": 1.001512,
+      "midpoint_ref": [
+        667.0,
+        376.0
+      ],
+      "midpoint_target": [
+        664.0,
+        371.5
+      ],
+      "angle_ref_deg": 122.946008,
+      "angle_target_deg": 122.889979
+    },
+    {
+      "ref_segment": "S15",
+      "target_segment": "S6",
+      "ref_from_node": "C4",
+      "ref_to_node": "B14",
+      "target_from_node": "C4",
+      "target_to_node": "B8",
+      "rotation_deg": -0.095932,
+      "translation_midpoint_xy": [
+        -1.5,
+        -5.0
+      ],
+      "rigid_translation_xy": [
+        -3.120348,
+        -4.52481
+      ],
+      "length_ref": 855.967289,
+      "length_target": 852.65761,
+      "length_ratio": 0.996133,
+      "midpoint_ref": [
+        283.0,
+        968.0
+      ],
+      "midpoint_target": [
+        281.5,
+        963.0
+      ],
+      "angle_ref_deg": 122.984582,
+      "angle_target_deg": 122.88865
+    },
+    {
+      "ref_segment": "S16",
+      "target_segment": "S7",
+      "ref_from_node": "B17",
+      "ref_to_node": "C5",
+      "target_from_node": "B11",
+      "target_to_node": "C5",
+      "rotation_deg": -0.236244,
+      "translation_midpoint_xy": [
+        -2.0,
+        -0.5
+      ],
+      "rigid_translation_xy": [
+        -2.533232,
+        0.853524
+      ],
+      "length_ref": 135.351395,
+      "length_target": 136.180028,
+      "length_ratio": 1.006122,
+      "midpoint_ref": [
+        328.0,
+        130.0
+      ],
+      "midpoint_target": [
+        326.0,
+        129.5
+      ],
+      "angle_ref_deg": 124.159695,
+      "angle_target_deg": 123.92345
+    },
+    {
+      "ref_segment": "S17",
+      "target_segment": "S8",
+      "ref_from_node": "C5",
+      "ref_to_node": "B16",
+      "target_from_node": "C5",
+      "target_to_node": "B10",
+      "rotation_deg": 0.002508,
+      "translation_midpoint_xy": [
+        -1.0,
+        -1.5
+      ],
+      "rigid_translation_xy": [
+        -0.984069,
+        -1.50744
+      ],
+      "length_ref": 429.343685,
+      "length_target": 425.738182,
+      "length_ratio": 0.991602,
+      "midpoint_ref": [
+        170.0,
+        364.0
+      ],
+      "midpoint_target": [
+        169.0,
+        362.5
+      ],
+      "angle_ref_deg": 123.986167,
+      "angle_target_deg": 123.988675
+    },
+    {
+      "ref_segment": "S2",
+      "target_segment": "S11",
+      "ref_from_node": "B9",
+      "ref_to_node": "C2",
+      "target_from_node": "B15",
+      "target_to_node": "C3",
+      "rotation_deg": -0.137048,
+      "translation_midpoint_xy": [
+        -2.0,
+        -3.0
+      ],
+      "rigid_translation_xy": [
+        -2.257239,
+        -1.088538
+      ],
+      "length_ref": 78.771822,
+      "length_target": 74.303432,
+      "length_ratio": 0.943274,
+      "midpoint_ref": [
+        799.0,
+        108.5
+      ],
+      "midpoint_target": [
+        797.0,
+        105.5
+      ],
+      "angle_ref_deg": 61.15734,
+      "angle_target_deg": 61.020292
+    },
+    {
+      "ref_segment": "S3",
+      "target_segment": "S12",
+      "ref_from_node": "C2",
+      "ref_to_node": "C1",
+      "target_from_node": "C3",
+      "target_to_node": "C1",
+      "rotation_deg": 0.201618,
+      "translation_midpoint_xy": [
+        -3.0,
+        -3.0
+      ],
+      "rigid_translation_xy": [
+        -1.649899,
+        -6.340589
+      ],
+      "length_ref": 546.058605,
+      "length_target": 549.563463,
+      "length_ratio": 1.006418,
+      "midpoint_ref": [
+        950.0,
+        382.0
+      ],
+      "midpoint_target": [
+        947.0,
+        379.0
+      ],
+      "angle_ref_deg": 61.088075,
+      "angle_target_deg": 61.289693
+    },
+    {
+      "ref_segment": "S4",
+      "target_segment": "S13",
+      "ref_from_node": "C1",
+      "ref_to_node": "B8",
+      "target_from_node": "C1",
+      "target_to_node": "B14",
+      "rotation_deg": 0.114788,
+      "translation_midpoint_xy": [
+        0.5,
+        7.5
+      ],
+      "rigid_translation_xy": [
+        2.646345,
+        4.837578
+      ],
+      "length_ref": 1025.875236,
+      "length_target": 1044.142711,
+      "length_ratio": 1.017807,
+      "midpoint_ref": [
+        1330.0,
+        1070.0
+      ],
+      "midpoint_target": [
+        1330.5,
+        1077.5
+      ],
+      "angle_ref_deg": 61.086438,
+      "angle_target_deg": 61.201227
+    },
+    {
+      "ref_segment": "S5",
+      "target_segment": "S14",
+      "ref_from_node": "B10",
+      "ref_to_node": "C5",
+      "target_from_node": "B16",
+      "target_to_node": "C5",
+      "rotation_deg": 0.211475,
+      "translation_midpoint_xy": [
+        -2.0,
+        -0.5
+      ],
+      "rigid_translation_xy": [
+        -1.518409,
+        -1.458754
+      ],
+      "length_ref": 127.059041,
+      "length_target": 127.941393,
+      "length_ratio": 1.006944,
+      "midpoint_ref": [
+        260.0,
+        130.0
+      ],
+      "midpoint_target": [
+        258.0,
+        129.5
+      ],
+      "angle_ref_deg": 61.82141,
+      "angle_target_deg": 62.032884
+    },
+    {
+      "ref_segment": "S6",
+      "target_segment": "S15",
+      "ref_from_node": "C5",
+      "ref_to_node": "C4",
+      "target_from_node": "C5",
+      "target_to_node": "C4",
+      "rotation_deg": -0.120828,
+      "translation_midpoint_xy": [
+        -2.5,
+        -2.0
+      ],
+      "rigid_translation_xy": [
+        -3.337368,
+        -1.149254
+      ],
+      "length_ref": 479.588365,
+      "length_target": 475.59016,
+      "length_ratio": 0.991663,
+      "midpoint_ref": [
+        403.0,
+        397.5
+      ],
+      "midpoint_target": [
+        400.5,
+        395.5
+      ],
+      "angle_ref_deg": 61.885348,
+      "angle_target_deg": 61.76452
+    },
+    {
+      "ref_segment": "S7",
+      "target_segment": "S16",
+      "ref_from_node": "C4",
+      "ref_to_node": "C3",
+      "target_from_node": "C4",
+      "target_to_node": "C2",
+      "rotation_deg": 0.048442,
+      "translation_midpoint_xy": [
+        -3.0,
+        -3.5
+      ],
+      "rigid_translation_xy": [
+        -2.276891,
+        -4.047559
+      ],
+      "length_ref": 558.354726,
+      "length_target": 559.236086,
+      "length_ratio": 1.001578,
+      "midpoint_ref": [
+        648.0,
+        855.0
+      ],
+      "midpoint_target": [
+        645.0,
+        851.5
+      ],
+      "angle_ref_deg": 61.782644,
+      "angle_target_deg": 61.831086
+    },
+    {
+      "ref_segment": "S8",
+      "target_segment": "S17",
+      "ref_from_node": "C3",
+      "ref_to_node": "B11",
+      "target_from_node": "C2",
+      "target_to_node": "B17",
+      "rotation_deg": -0.0566,
+      "translation_midpoint_xy": [
+        -1.5,
+        -1.5
+      ],
+      "rigid_translation_xy": [
+        -3.128935,
+        -0.439232
+      ],
+      "length_ref": 1243.706155,
+      "length_target": 1247.766404,
+      "length_ratio": 1.003265,
+      "midpoint_ref": [
+        1073.0,
+        1649.5
+      ],
+      "midpoint_target": [
+        1071.5,
+        1648.0
+      ],
+      "angle_ref_deg": 61.889574,
+      "angle_target_deg": 61.832975
+    },
+    {
+      "ref_segment": "S9",
+      "target_segment": "S0",
+      "ref_from_node": "B12",
+      "ref_to_node": "C0",
+      "target_from_node": "B6",
+      "target_to_node": "C0",
+      "rotation_deg": 0.122706,
+      "translation_midpoint_xy": [
+        -3.5,
+        -0.5
+      ],
+      "rigid_translation_xy": [
+        -3.207694,
+        -3.475483
+      ],
+      "length_ref": 144.267113,
+      "length_target": 145.646833,
+      "length_ratio": 1.009564,
+      "midpoint_ref": [
+        1389.5,
+        135.0
+      ],
+      "midpoint_target": [
+        1386.0,
+        134.5
+      ],
+      "angle_ref_deg": 122.257971,
+      "angle_target_deg": 122.380678
+    }
+  ]
+}

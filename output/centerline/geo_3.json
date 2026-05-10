@@ -1,0 +1,584 @@
+{
+  "source": "output\\pattern\\3_matrix_instances_bw.png",
+  "width": 1631,
+  "height": 2245,
+  "inner_rect": [
+    50,
+    73,
+    1582,
+    2198
+  ],
+  "line_count": 6,
+  "node_count": 18,
+  "segment_count": 18,
+  "lines": [
+    {
+      "id": 0,
+      "family": 0,
+      "origin": [
+        904.714,
+        896.667
+      ],
+      "direction": [
+        -0.534298,
+        0.845296
+      ],
+      "support_count": 21,
+      "support_length": 17178.75
+    },
+    {
+      "id": 1,
+      "family": 0,
+      "origin": [
+        480.692,
+        654.654
+      ],
+      "direction": [
+        -0.542854,
+        0.839827
+      ],
+      "support_count": 13,
+      "support_length": 9780.46
+    },
+    {
+      "id": 2,
+      "family": 0,
+      "origin": [
+        252.571,
+        238.214
+      ],
+      "direction": [
+        -0.558498,
+        0.829506
+      ],
+      "support_count": 7,
+      "support_length": 3052.28
+    },
+    {
+      "id": 3,
+      "family": 1,
+      "origin": [
+        1433.125,
+        351.125
+      ],
+      "direction": [
+        0.484747,
+        0.874654
+      ],
+      "support_count": 4,
+      "support_length": 2559.92
+    },
+    {
+      "id": 4,
+      "family": 1,
+      "origin": [
+        1177.107,
+        797.786
+      ],
+      "direction": [
+        0.481634,
+        0.876372
+      ],
+      "support_count": 14,
+      "support_length": 14079.67
+    },
+    {
+      "id": 5,
+      "family": 1,
+      "origin": [
+        936.5,
+        1395.75
+      ],
+      "direction": [
+        0.472341,
+        0.881416
+      ],
+      "support_count": 16,
+      "support_length": 18696.72
+    }
+  ],
+  "nodes": [
+    {
+      "id": "C0",
+      "kind": "crossing",
+      "point": [
+        1347,
+        196
+      ]
+    },
+    {
+      "id": "C1",
+      "kind": "crossing",
+      "point": [
+        1079,
+        620
+      ]
+    },
+    {
+      "id": "C2",
+      "kind": "crossing",
+      "point": [
+        777,
+        1098
+      ]
+    },
+    {
+      "id": "C3",
+      "kind": "crossing",
+      "point": [
+        815,
+        138
+      ]
+    },
+    {
+      "id": "C4",
+      "kind": "crossing",
+      "point": [
+        513,
+        605
+      ]
+    },
+    {
+      "id": "C5",
+      "kind": "crossing",
+      "point": [
+        288,
+        186
+      ]
+    },
+    {
+      "id": "B6",
+      "kind": "boundary",
+      "point": [
+        1425,
+        73
+      ],
+      "line_index": 0
+    },
+    {
+      "id": "B7",
+      "kind": "boundary",
+      "point": [
+        82,
+        2198
+      ],
+      "line_index": 0
+    },
+    {
+      "id": "B8",
+      "kind": "boundary",
+      "point": [
+        50,
+        1321
+      ],
+      "line_index": 1
+    },
+    {
+      "id": "B9",
+      "kind": "boundary",
+      "point": [
+        857,
+        73
+      ],
+      "line_index": 1
+    },
+    {
+      "id": "B10",
+      "kind": "boundary",
+      "point": [
+        50,
+        539
+      ],
+      "line_index": 2
+    },
+    {
+      "id": "B11",
+      "kind": "boundary",
+      "point": [
+        364,
+        73
+      ],
+      "line_index": 2
+    },
+    {
+      "id": "B12",
+      "kind": "boundary",
+      "point": [
+        1582,
+        620
+      ],
+      "line_index": 3
+    },
+    {
+      "id": "B13",
+      "kind": "boundary",
+      "point": [
+        1279,
+        73
+      ],
+      "line_index": 3
+    },
+    {
+      "id": "B14",
+      "kind": "boundary",
+      "point": [
+        1582,
+        1535
+      ],
+      "line_index": 4
+    },
+    {
+      "id": "B15",
+      "kind": "boundary",
+      "point": [
+        779,
+        73
+      ],
+      "line_index": 4
+    },
+    {
+      "id": "B16",
+      "kind": "boundary",
+      "point": [
+        228,
+        73
+      ],
+      "line_index": 5
+    },
+    {
+      "id": "B17",
+      "kind": "boundary",
+      "point": [
+        1366,
+        2198
+      ],
+      "line_index": 5
+    }
+  ],
+  "segments": [
+    {
+      "id": "S0",
+      "line_index": 0,
+      "from": "B6",
+      "to": "C0",
+      "length": 145.95,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          1425,
+          73
+        ],
+        [
+          1347,
+          196
+        ]
+      ]
+    },
+    {
+      "id": "S1",
+      "line_index": 0,
+      "from": "C0",
+      "to": "C1",
+      "length": 501.35,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          1347,
+          196
+        ],
+        [
+          1079,
+          620
+        ]
+      ]
+    },
+    {
+      "id": "S2",
+      "line_index": 0,
+      "from": "C1",
+      "to": "C2",
+      "length": 565.81,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          1079,
+          620
+        ],
+        [
+          777,
+          1098
+        ]
+      ]
+    },
+    {
+      "id": "S3",
+      "line_index": 0,
+      "from": "C2",
+      "to": "B7",
+      "length": 1300.8,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          777,
+          1098
+        ],
+        [
+          82,
+          2198
+        ]
+      ]
+    },
+    {
+      "id": "S4",
+      "line_index": 1,
+      "from": "B9",
+      "to": "C3",
+      "length": 77.54,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          857,
+          73
+        ],
+        [
+          815,
+          138
+        ]
+      ]
+    },
+    {
+      "id": "S5",
+      "line_index": 1,
+      "from": "C3",
+      "to": "C4",
+      "length": 555.96,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          815,
+          138
+        ],
+        [
+          513,
+          605
+        ]
+      ]
+    },
+    {
+      "id": "S6",
+      "line_index": 1,
+      "from": "C4",
+      "to": "B8",
+      "length": 852.47,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          513,
+          605
+        ],
+        [
+          50,
+          1321
+        ]
+      ]
+    },
+    {
+      "id": "S7",
+      "line_index": 2,
+      "from": "B11",
+      "to": "C5",
+      "length": 135.74,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          364,
+          73
+        ],
+        [
+          288,
+          186
+        ]
+      ]
+    },
+    {
+      "id": "S8",
+      "line_index": 2,
+      "from": "C5",
+      "to": "B10",
+      "length": 426.13,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          288,
+          186
+        ],
+        [
+          50,
+          539
+        ]
+      ]
+    },
+    {
+      "id": "S9",
+      "line_index": 3,
+      "from": "B13",
+      "to": "C0",
+      "length": 141.05,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          1279,
+          73
+        ],
+        [
+          1347,
+          196
+        ]
+      ]
+    },
+    {
+      "id": "S10",
+      "line_index": 3,
+      "from": "C0",
+      "to": "B12",
+      "length": 484.05,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          1347,
+          196
+        ],
+        [
+          1582,
+          620
+        ]
+      ]
+    },
+    {
+      "id": "S11",
+      "line_index": 4,
+      "from": "B15",
+      "to": "C3",
+      "length": 74.31,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          779,
+          73
+        ],
+        [
+          815,
+          138
+        ]
+      ]
+    },
+    {
+      "id": "S12",
+      "line_index": 4,
+      "from": "C3",
+      "to": "C1",
+      "length": 550.04,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          815,
+          138
+        ],
+        [
+          1079,
+          620
+        ]
+      ]
+    },
+    {
+      "id": "S13",
+      "line_index": 4,
+      "from": "C1",
+      "to": "B14",
+      "length": 1043.35,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          1079,
+          620
+        ],
+        [
+          1582,
+          1535
+        ]
+      ]
+    },
+    {
+      "id": "S14",
+      "line_index": 5,
+      "from": "B16",
+      "to": "C5",
+      "length": 127.75,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          228,
+          73
+        ],
+        [
+          288,
+          186
+        ]
+      ]
+    },
+    {
+      "id": "S15",
+      "line_index": 5,
+      "from": "C5",
+      "to": "C4",
+      "length": 475.86,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          288,
+          186
+        ],
+        [
+          513,
+          605
+        ]
+      ]
+    },
+    {
+      "id": "S16",
+      "line_index": 5,
+      "from": "C4",
+      "to": "C2",
+      "length": 559.79,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          513,
+          605
+        ],
+        [
+          777,
+          1098
+        ]
+      ]
+    },
+    {
+      "id": "S17",
+      "line_index": 5,
+      "from": "C2",
+      "to": "B17",
+      "length": 1247.49,
+      "black_ratio": 1.0,
+      "points": [
+        [
+          777,
+          1098
+        ],
+        [
+          1366,
+          2198
+        ]
+      ]
+    }
+  ]
+}
